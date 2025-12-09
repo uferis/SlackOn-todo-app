@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "410765466726",
+    "project_id": "todobyslackon",
+    "storage_bucket": "todobyslackon.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:410765466726:android:f1f06f5b790f72361f61a7",
+        "android_client_info": {
+          "package_name": "com.example.todobyslackon"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSTgOfg3j3i6xLEkbWGGubXYYsIaOZZB8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
