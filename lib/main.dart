@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:todobyslackon/task_details.dart';
 
 
 void main() { // Entry point of the app
@@ -72,7 +71,7 @@ class _AppState extends State<App> {
   {
     setState(() {  
       completedList.add(todoList[index]); // removes a task at a chosen position (index)
-      print(completedList[0]);
+      //print(completedList[0]);
       todoList.removeAt(index);
     });
   }
@@ -128,7 +127,7 @@ class _AppState extends State<App> {
                                 Expanded(
                                   flex: 80,
                                   child: Text(
-                                    style: TextStyle(color: Colors.white70, fontSize: 15),
+                                    style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 15),
                                     todoList[index],
                                   )
                                 ),
@@ -206,7 +205,7 @@ class _AppState extends State<App> {
                                 Expanded(
                                   flex: 80,
                                   child: Text(
-                                    style: TextStyle(color: Colors.white70, fontSize: 15),
+                                    style: TextStyle(color:Color(0xFFFFFFFF), fontSize: 15),
                                     completedList[index], // This is where you specify what list
                                   )
                                 ),
