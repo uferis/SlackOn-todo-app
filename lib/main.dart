@@ -9,7 +9,7 @@ void main() { // Entry point of the app
   
   runApp(MaterialApp(
     home: App(), //Details(), // Calls the Home widget which is the main screen of the app
-    theme: ThemeData(primarySwatch: Colors.grey),
+    
 
   ));
 }
@@ -24,12 +24,14 @@ class App extends StatefulWidget {
 class _AppState extends State<App> {
   
   // List to store tasks
-  List<TodoItem> todoList = []; // Tell the type in < ... >
+  List<String> todoList = []; // Tell the type in < ... >
   List<String> completedList = [];
   // Controller for text input
   final TextEditingController _controller = TextEditingController(); // A controller for an editable text field.
   // Index to track which task is being edited
   int updateIndex = -1; // -- Acts like a marker
+  int completedListFlex = 40;
+  bool isFocused = false;
   bool isEditing = false;
   //FirebaseDatabase database = FirebaseDatabase.instance;
 
@@ -51,7 +53,7 @@ class _AppState extends State<App> {
 
   void addListItem(String task){
     setState(() {
-      todoList.add(TodoItem(id: , text: text, category: category, priority: priority, description: description)); // adds a task (string) to the list
+      todoList.add(task); // adds a task (string) to the list
       _controller.clear(); // sets the value to empty
     });
   }
@@ -86,11 +88,11 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 79, 79, 83),
+      backgroundColor: Color(0xFF007693),
       appBar: AppBar(
         title: Text("SlackOn To-Do"),
-        backgroundColor: const Color.fromARGB(255, 59, 59, 63),
-        foregroundColor: Colors.white,
+        backgroundColor: const Color(0xFF003B4A),
+        foregroundColor: Color(0xFFFFFFFF),
         centerTitle: true,
         ),
 
@@ -106,7 +108,7 @@ class _AppState extends State<App> {
             child:Card(
               shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.all(Radius.circular(5))),
               margin: EdgeInsets.all(10),
-              color: const Color.fromARGB(255, 66, 66, 70),
+              color: const Color(0xFF024C5E),
               child: Column(
                 children: [
                   Expanded(
@@ -116,7 +118,7 @@ class _AppState extends State<App> {
                       itemBuilder: (context, index){
                         return Card( // similar to Container widget, just more pollished.
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
-                          color: const Color.fromARGB(255, 59, 59, 63),
+                          color: const Color(0xFF036173),
                           child: Container(
                             padding: EdgeInsets.fromLTRB(5, 0, 3, 0),
                             child: Row(
@@ -139,7 +141,7 @@ class _AppState extends State<App> {
                                     });
                                   }, 
                                   icon: Icon(
-                                    Icons.delete,
+                                    Icons.check_circle_rounded,
                                     size: 20,
                                     color: Colors.white,
                                   ),
@@ -155,6 +157,7 @@ class _AppState extends State<App> {
                                       _controller.text = todoList[index];
                                       updateIndex = index; // enters editing mode
                                       isEditing = false;
+                                      completedListFlex = 4;
                                       //updateListItem(_controller.text, index);
                                     });
                                   }, 
@@ -179,11 +182,11 @@ class _AppState extends State<App> {
 
           /// COMPLETED SECTION
           Expanded(
-            flex: 40,
+            flex: completedListFlex,
             child: Card(
               shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.all(Radius.circular(5))),
               margin: EdgeInsets.all(10),
-              color: const Color.fromARGB(255, 66, 66, 70),
+              color: const Color(0xFF024C5E),
               child: Column(
                 children: [
                   Expanded(
@@ -193,7 +196,7 @@ class _AppState extends State<App> {
                       itemBuilder: (context, index){
                         return Card( // similar to Container widget, just more pollished.
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
-                          color: const Color.fromARGB(255, 59, 59, 63),
+                          color: const Color(0xFF036173),
                           child: Container(
                             padding: EdgeInsets.fromLTRB(5, 0, 3, 0),
                             child: Row(
@@ -208,11 +211,25 @@ class _AppState extends State<App> {
                                   )
                                 ),
 
-                                // Delete button
+                                // GO BACK to TASK button
                                 IconButton(
                                   onPressed: (){
                                     setState(() {
                                       undoCompleteListItem(index);
+                                    });
+                                  }, 
+                                  icon: Icon(
+                                    Icons.arrow_circle_up_rounded,
+                                    size: 22,
+                                    color: Colors.white,
+                                  ),
+                                ),
+
+
+                                IconButton(
+                                  onPressed: (){
+                                    setState(() {
+                                      completedList.removeAt(index);
                                     });
                                   }, 
                                   icon: Icon(
@@ -240,59 +257,85 @@ class _AppState extends State<App> {
               children: [
                 Expanded(
                   flex: 60,
-                  child: TextField(
-                    decoration: InputDecoration(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextField(
+                      //cursorWidth: 12,
+                      style: TextStyle(color: Color(0xFFFFFFFF)),
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        border: OutlineInputBorder(),
+                        fillColor: Color(0xFF003B4A),
+                        filled: true,
+                      ),
+                      focusNode: myFocusNode, // myFocusNode gets assigned to this TextField
+                      controller: _controller,
+                      onTap: (){ 
+                        setState(() {
+                          isFocused = true; 
+                          completedListFlex = 4;
+                        });
+                      },
+                      onSubmitted: (value){
+                        completedListFlex = 40;
+                        if(updateIndex != -1)
+                        {
+                          updateListItem(value, updateIndex);
+                          isFocused = false;
+                        }
+                        else
+                        {
+                          addListItem(value);
+                          isFocused = false;
+                        }
+                      }
                     ),
-                    focusNode: myFocusNode, // myFocusNode gets assigned to this TextField
-                    controller: _controller,
-                    onSubmitted: (value){
-                      if(updateIndex != -1)
-                      {
-                        updateListItem(value, updateIndex);
-                      }
-                      else
-                      {
-                        addListItem(value);
-                      }
-                    }
                   ),
                 ),
                 SizedBox(width: 10,),
-                FloatingActionButton(
-                  onPressed: (){
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const Details()),
-                    );
-                  
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: FloatingActionButton(
+                    backgroundColor: Color(0xFF003B4A),
+                    foregroundColor: Color(0xFFFFFFFF),
                     
-                    /*
-                    debugPrint(updateIndex.toString());
-                    if(isEditing == false && updateIndex == -1)
-                    {
-                      myFocusNode.requestFocus(); // Now requestFocus func words cuz mFN is assigned to a TextField
-                      isEditing = true;
-                      
-                    }
-                    else
-                    {
-                      if (updateIndex != -1)
+                    onPressed: (){
+
+                      debugPrint(updateIndex.toString());
+                      if(!isEditing && updateIndex == -1 && !isFocused )
                       {
-                        
-                        updateListItem(_controller.text, updateIndex);
-                        
+                        myFocusNode.requestFocus(); // Now requestFocus func words cuz mFN is assigned to a TextField
+                        isEditing = true;
+                        isFocused = true; 
+                        setState(() {
+                          completedListFlex = 4;
+                        });
                       }
                       else
                       {
-                        addListItem(_controller.text);
-                        
+                        if (updateIndex != -1)
+                        {
+                          
+                          updateListItem(_controller.text, updateIndex);
+                          
+
+                        }
+                        else
+                        {
+                          addListItem(_controller.text);
+                          
+                        }
+                        isFocused = false;
+                        isEditing = false;
+                        myFocusNode.unfocus();
+                        setState(() {
+                          completedListFlex = 40;
+                        });
                       }
-                      isEditing = false;
-                      myFocusNode.unfocus();
-                    }
-                    */
-                    setState(() {});
-                  },
+                      
+                      setState(() {});
+                    },
+                  ),
                 ),
                 
                 
@@ -305,45 +348,3 @@ class _AppState extends State<App> {
     );
   }
 }
-/*
-Column( 
-        children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          
-          children: [
-            Expanded(child:ListTile(
-              leading: FlutterLogo(),
-              title: Text("Hello"),
-              tileColor: Colors.red,
-            ),)
-          ],
-        ),
-        ]
-      ),
-
-*/
-
-class Task {
-  final String id;
-  final String title;
-  bool completed;
-
-  Task({required this.id, required this.title, this.completed = false});
-
-  void toggleCompleted() {
-    completed = !completed;
-  }
-}
-
-class TodoItem
-{
-  final String id;
-  final String text;
-  final String category;
-  final int priority;
-  final String description;
-
-  TodoItem({required this.id, required this.text, required this.category, required this.priority, required this.description});
-}
-
